@@ -5,45 +5,104 @@
 <title>Torque Extension Calculator</title>
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#111111">
+<meta name="theme-color" content="#c40000">
 
 <style>
 body {
-    font-family: Arial, sans-serif;
-    background: #111;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #000;
     color: white;
-    text-align: center;
-    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
+
+.card {
+    background: #111;
+    padding: 25px;
+    width: 92%;
+    max-width: 420px;
+    border-radius: 14px;
+    box-shadow: 0 0 25px rgba(196,0,0,0.4);
+    border: 2px solid #c40000;
+}
+
+h2 {
+    text-align: center;
+    color: #c40000;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
 input, select {
-    padding: 10px;
-    margin: 8px;
-    width: 85%;
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #1b1b1b;
+    color: white;
     font-size: 16px;
 }
-button {
-    padding: 14px;
-    width: 90%;
-    font-size: 18px;
-    background: #ff9800;
-    border: none;
-    color: black;
-    font-weight: bold;
+
+input:focus, select:focus {
+    outline: none;
+    border: 1px solid #c40000;
 }
+
+input[type=range] {
+    padding: 0;
+}
+
+button {
+    width: 100%;
+    padding: 16px;
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    background: #c40000;
+    color: white;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
 .result {
     margin-top: 25px;
-    font-size: 24px;
-    font-weight: bold;
+    text-align: center;
 }
+
+.big-result {
+    font-size: 34px;
+    font-weight: bold;
+    color: #c40000;
+}
+
 .small {
     font-size: 18px;
-    color: #bbb;
+    color: #aaa;
+}
+
+.footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #555;
 }
 </style>
 </head>
+
 <body>
 
-<h2>Torque Extension Calculator</h2>
+<div class="card">
+<h2>TORQUE CALC</h2>
 
 <input type="number" id="torque" placeholder="Desired Torque">
 <select id="unit">
@@ -53,13 +112,25 @@ button {
 
 <input type="number" id="wrench" placeholder="Wrench Length (inches)">
 <input type="number" id="extension" placeholder="Extension Length (inches)">
-<input type="number" id="angle" placeholder="Angle (0-90 degrees)">
 
-<button onclick="calculate()">Calculate</button>
+<label>Angle: <span id="angleValue">0</span>°</label>
+<input type="range" id="angle" min="0" max="90" value="0" oninput="updateAngle(this.value)">
+
+<button onclick="calculate()">CALCULATE</button>
 
 <div class="result" id="output"></div>
 
+<div class="footer">
+Version 1.0
+</div>
+
+</div>
+
 <script>
+function updateAngle(val) {
+    document.getElementById("angleValue").innerText = val;
+}
+
 function calculate() {
     let T = parseFloat(document.getElementById("torque").value);
     let L = parseFloat(document.getElementById("wrench").value);
@@ -67,8 +138,8 @@ function calculate() {
     let angle = parseFloat(document.getElementById("angle").value);
     let unit = document.getElementById("unit").value;
 
-    if (isNaN(T) || isNaN(L) || isNaN(E) || isNaN(angle)) {
-        document.getElementById("output").innerHTML = "Please fill all fields.";
+    if (isNaN(T) || isNaN(L) || isNaN(E)) {
+        document.getElementById("output").innerHTML = "Fill all fields.";
         return;
     }
 
@@ -82,13 +153,12 @@ function calculate() {
         : corrected * 0.112985;
 
     document.getElementById("output").innerHTML =
-        "Set Wrench To:<br>" +
+        "<div class='big-result'>" +
         corrected.toFixed(2) + " " + (unit === "ftlb" ? "ft-lb" : "in-lb") +
-        "<br><span class='small'>" +
-        Nm.toFixed(2) + " Nm</span>";
+        "</div><div class='small'>" +
+        Nm.toFixed(2) + " Nm</div>";
 }
 
-// Register service worker
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js');
 }
