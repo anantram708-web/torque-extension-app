@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Torque Extension Calculator</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#111111">
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+input, select {
+    padding: 10px;
+    margin: 8px;
+    width: 85%;
+    font-size: 16px;
+}
+button {
+    padding: 14px;
+    width: 90%;
+    font-size: 18px;
+    background: #ff9800;
+    border: none;
+    color: black;
+    font-weight: bold;
+}
+.result {
+    margin-top: 25px;
+    font-size: 24px;
+    font-weight: bold;
+}
+.small {
+    font-size: 18px;
+    color: #bbb;
+}
+</style>
+</head>
+<body>
+
+<h2>Torque Extension Calculator</h2>
+
+<input type="number" id="torque" placeholder="Desired Torque">
+<select id="unit">
+    <option value="ftlb">ft-lb</option>
+    <option value="inlb">in-lb</option>
+</select>
+
+<input type="number" id="wrench" placeholder="Wrench Length (inches)">
+<input type="number" id="extension" placeholder="Extension Length (inches)">
+<input type="number" id="angle" placeholder="Angle (0-90 degrees)">
+
+<button onclick="calculate()">Calculate</button>
+
+<div class="result" id="output"></div>
+
+<script>
+function calculate() {
+    let T = parseFloat(document.getElementById("torque").value);
+    let L = parseFloat(document.getElementById("wrench").value);
+    let E = parseFloat(document.getElementById("extension").value);
+    let angle = parseFloat(document.getElementById("angle").value);
+    let unit = document.getElementById("unit").value;
+
+    if (isNaN(T) || isNaN(L) || isNaN(E) || isNaN(angle)) {
+        document.getElementById("output").innerHTML = "Please fill all fields.";
+        return;
+    }
+
+    let radians = angle * (Math.PI / 180);
+    let corrected = angle === 90
+        ? T
+        : (T * L) / (L + (E * Math.cos(radians)));
+
+    let Nm = unit === "ftlb"
+        ? corrected * 1.35582
+        : corrected * 0.112985;
+
+    document.getElementById("output").innerHTML =
+        "Set Wrench To:<br>" +
+        corrected.toFixed(2) + " " + (unit === "ftlb" ? "ft-lb" : "in-lb") +
+        "<br><span class='small'>" +
+        Nm.toFixed(2) + " Nm</span>";
+}
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+}
+</script>
+
+</body>
+</html>
